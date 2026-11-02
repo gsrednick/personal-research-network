@@ -1,433 +1,74 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Research Network | Griffin Srednick</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Research network | Griffin Srednick</title>
 <style>
-:root {
-  --ink: #242424;
-  --muted: #666;
-  --line: #b7bec0;
-  --teal: #356e76;
-  --blue: #647f91;
-  --olive: #777d61;
-  --gold: #a17d50;
-  --node: #f4f2ed;
-}
-* { box-sizing: border-box; }
-html, body {
-  margin: 0;
-  padding: 0;
-  background: transparent !important;
-  color: var(--ink);
-  font-family: Arial, Helvetica, sans-serif;
-}
-body { overflow-x: hidden; }
-.wrapper {
-  width: 100%;
-  max-width: 1100px;
-  margin: auto;
-  padding: 10px 12px 24px;
-}
-.intro {
-  text-align: center;
-  margin: 8px auto 0;
-}
-.intro p {
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.6;
-  margin: 0;
-}
-svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  overflow: visible;
-}
-.edge {
-  stroke: var(--line);
-  stroke-width: 1.7;
-  opacity: .65;
-  transition: opacity .2s, stroke-width .2s;
-}
-.node {
-  cursor: pointer;
-  outline: none;
-  transition: opacity .2s;
-}
-.node circle {
-  stroke-width: 2.2;
-  transition: stroke-width .2s;
-}
-.node text {
-  font-family: Arial, Helvetica, sans-serif;
-  text-anchor: middle;
-  font-size: 14px;
-  font-weight: 600;
-  fill: var(--ink);
-  pointer-events: none;
-}
-.node.core text { fill: white; }
-.node:focus-visible circle { stroke-width: 5; }
-.node:hover circle { stroke-width: 4; }
-.panel {
-  max-width: 760px;
-  margin: -4px auto 0;
-  padding: 18px 4px;
-  border-top: 1px solid #c8c8c8;
-  min-height: 140px;
-}
-.panel h2 {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0 0 10px;
-}
-.panel p {
-  font-size: 14px;
-  line-height: 1.7;
-  margin: 0 0 12px;
-  color: #444;
-}
-.panel a {
-  display: block;
-  font-size: 14px;
-  color: var(--teal);
-  margin: 8px 0;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.hint {
-  text-align: center;
-  font-size: 12px;
-  color: var(--muted);
-  margin: 4px 0 18px;
-}
-@media(max-width:600px) {
-  .wrapper { padding: 8px 4px 20px; }
-  .node text { font-size: 15px; }
-  .panel { margin: 0 12px; }
-}
+:root{--ink:#252525;--muted:#666;--teal:#356e76;--line:#b7bec0;--fill:#f4f2ed}
+*{box-sizing:border-box}html,body{margin:0;background:transparent!important;color:var(--ink);font-family:Arial,Helvetica,sans-serif}body{overflow-x:hidden}
+.wrap{max-width:1100px;margin:auto;padding:12px 14px 30px}.intro{text-align:center;color:var(--muted);font-size:14px;line-height:1.65;max-width:770px;margin:8px auto 0}
+svg{width:100%;height:auto;display:block}.edge{stroke:var(--line);stroke-width:1.8;opacity:.7;transition:opacity .2s,stroke-width .2s}.node{cursor:pointer;transition:opacity .2s}.node circle{stroke-width:2.3;transition:stroke-width .2s}.node text{font-size:14px;font-weight:600;text-anchor:middle;fill:var(--ink);pointer-events:none}.node.core text{fill:white}.node:focus-visible{outline:none}.node:focus-visible circle,.node:hover circle{stroke-width:4}
+.hint{text-align:center;font-size:12px;color:var(--muted);margin:0 0 16px}.detail{max-width:850px;margin:0 auto;border-top:1px solid #c8c8c8;padding:22px 2px;min-height:165px}.detail h2{font-size:23px;font-weight:600;margin:0 0 12px}.detail p{font-size:15px;line-height:1.75;margin:0 0 13px;color:#404040}.media{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}.media figure{margin:0}.media img{display:block;width:100%;height:auto;max-height:350px;object-fit:cover;border-radius:3px}.media figcaption{font-size:12px;color:var(--muted);margin-top:6px}.products{margin-top:15px}.products h3{font-size:14px;text-transform:uppercase;letter-spacing:.08em;font-weight:600}.products article{font-size:14px;line-height:1.6;margin:9px 0;padding-left:13px;border-left:2px solid var(--teal)}.products a{color:var(--teal);text-decoration:underline;text-underline-offset:3px}
+@media(max-width:600px){.wrap{padding:8px 6px 20px}.detail{margin:0 10px}.media{grid-template-columns:1fr}.detail h2{font-size:20px}}
 </style>
 </head>
 <body>
-<main class="wrapper">
-  <div class="intro">
-    <p>Exploring the processes that shape ecological dynamics, stability, and resilience across space and time.</p>
-  </div>
-
-  <svg id="network" viewBox="0 0 1000 740"
-       role="group" aria-label="Interactive research network">
-    <g id="edges"></g>
-    <g id="nodes"></g>
-  </svg>
-
-  <div class="hint">Select a node to explore research connections and associated work.</div>
-
-  <section class="panel" aria-live="polite">
-    <h2 id="panel-title">Research Network</h2>
-    <p id="panel-description">
-      Select a research theme, ecological mechanism, or methodological approach to explore how the different components of my research connect.
-    </p>
-    <div id="panel-links"></div>
-  </section>
+<main class="wrap">
+<p class="intro">Understanding how ecological interactions, environmental variability, and spatial processes shape marine ecosystem resilience.</p>
+<svg viewBox="0 0 1000 740" role="group" aria-label="Interactive research network"><g id="edges"></g><g id="nodes"></g></svg>
+<p class="hint">Select a node to explore the research, images, and associated products.</p>
+<section class="detail" aria-live="polite"><h2 id="detail-title">Explore my research</h2><div id="detail-text"><p>Select a node to learn more about how the themes, mechanisms, and methods of my research connect.</p></div><div class="media" id="detail-media"></div><div class="products" id="detail-products"></div></section>
 </main>
-
 <script>
-"use strict";
-
-// EDIT RESEARCH TOPICS HERE
-const topics = [
-  {
-    id: "core",
-    label: ["Predictive", "Ecology"],
-    type: "core",
-    x: 500, y: 355, r: 88,
-    description: "Understanding how biological interactions, environmental variability, and spatial processes shape ecological dynamics, stability, and resilience.",
-    links: []
-  },
-  {
-    id: "async",
-    label: ["Asynchrony", "& Stability"],
-    type: "theme",
-    x: 240, y: 175, r: 78,
-    description: "Investigating how differences in population and environmental fluctuations across space and time stabilize ecological systems.",
-    links: [
-      {
-        title: "Spatial portfolios in coral metapopulations",
-        url: "https://www.griffinsrednick.com/publications"
-      }
-    ]
-  },
-  {
-    id: "equilibrium",
-    label: ["Ecosystem", "Equilibrium"],
-    type: "theme",
-    x: 765, y: 175, r: 78,
-    description: "Understanding how ecological interactions, demographic processes, and environmental conditions shape ecosystem equilibrium.",
-    links: [
-      {
-        title: "Research on ecological equilibrium and community dynamics",
-        url: "https://www.griffinsrednick.com/publications"
-      }
-    ]
-  },
-  {
-    id: "resilience",
-    label: ["Spatial", "Resilience"],
-    type: "theme",
-    x: 500, y: 610, r: 82,
-    description: "Exploring how connectivity, dispersal, and spatial population structure influence recovery and persistence in changing marine ecosystems.",
-    links: [
-      {
-        title: "Coral reef connectivity and dispersal research",
-        url: "https://www.griffinsrednick.com/publications"
-      }
-    ]
-  },
-  {
-    id: "sensing",
-    label: ["Advanced", "Sensing"],
-    type: "method",
-    x: 785, y: 470, r: 68,
-    description: "Developing and integrating autonomous imaging, environmental sensors, and emerging observational technologies to capture ecological processes at new spatial and temporal resolutions.",
-    links: [
-      {
-        title: "Autonomous coral settlement imaging and observational technology",
-        url: "https://www.griffinsrednick.com/about"
-      }
-    ]
-  },
-  {
-    id: "environment",
-    label: ["Environmental", "Variability"],
-    type: "mechanism",
-    x: 490, y: 80, r: 65,
-    description: "Examining how variation in temperature, hydrodynamics, and other environmental drivers influences ecological dynamics and population synchrony.",
-    links: []
-  },
-  {
-    id: "interactions",
-    label: ["Species", "Interactions"],
-    type: "mechanism",
-    x: 930, y: 305, r: 59,
-    description: "Investigating how interactions among organisms influence community structure, ecological dynamics, and ecosystem stability.",
-    links: []
-  },
-  {
-    id: "connectivity",
-    label: ["Larval", "Connectivity"],
-    type: "mechanism",
-    x: 255, y: 545, r: 66,
-    description: "Quantifying dispersal pathways and demographic connectivity among marine populations, including coral reef metapopulations.",
-    links: [
-      {
-        title: "Coral connectivity and biophysical modeling",
-        url: "https://www.griffinsrednick.com/publications"
-      }
-    ]
-  },
-  {
-    id: "modeling",
-    label: ["Biophysical", "Modeling"],
-    type: "method",
-    x: 75, y: 365, r: 65,
-    description: "Combining physical oceanography, numerical simulations, and ecological models to understand and predict marine population dynamics.",
-    links: []
-  },
-  {
-    id: "field",
-    label: ["Field", "Ecology"],
-    type: "method",
-    x: 75, y: 665, r: 58,
-    description: "Using field experiments, ecological surveys, and in situ observations to test ecological mechanisms in natural marine systems.",
-    links: []
-  }
+'use strict';
+// IMAGE FILES: upload your photos/GIFs to assets/images/ or assets/gifs/.
+// If an image has not been uploaded yet, its slot is automatically hidden.
+const topics=[
+{id:'core',label:['Predictive','Ecology'],type:'core',x:500,y:355,r:88,
+ paragraphs:['My research develops predictive ecology by integrating biological interactions and environmental forcing across space and time. The aim is to understand and forecast ecosystem resilience under global change.','Across tropical coral reefs and temperate marine ecosystems, I combine field observations, experiments, quantitative approaches, and physical modeling to investigate ecological change.'],
+ media:[{src:'assets/images/research-overview.jpg',caption:'Marine ecological research'}],products:[]},
+{id:'async',label:['Asynchrony','& Stability'],type:'theme',x:240,y:175,r:78,
+ paragraphs:['What makes marine ecosystems stable and resilient? Asynchrony occurs when populations or species fluctuate differently through time. These differences can buffer aggregate ecosystem change.','My doctoral research examined what drives asynchrony in natural ecological systems, where environmental variability complicates the portfolio and insurance effects established by ecological theory and experiments.'],
+ media:[{src:'assets/images/asynchrony.jpg',caption:'Spatial and temporal variation in marine populations'},{src:'assets/gifs/asynchrony.gif',caption:'Population dynamics through time'}],
+ products:[{title:'Spatial portfolios in coral metapopulations are shaped by spatiotemporal asynchrony in environmental conditions',detail:'Ecology Letters (2026)',url:'https://www.griffinsrednick.com/publications'}]},
+{id:'equilibrium',label:['Ecosystem','Equilibrium'],type:'theme',x:765,y:175,r:78,
+ paragraphs:['Marine ecosystems are shaped by interacting biological and physical processes operating across taxa, locations, and timescales. Understanding species–environment interactions is only part of the challenge.','I investigate how food-web dynamics contribute to stability and how local stabilizing mechanisms scale up to whole ecosystems, where immigration and emigration also shape population dynamics.'],
+ media:[{src:'assets/images/equilibrium.jpg',caption:'Interactions within marine ecosystems'}],products:[]},
+{id:'resilience',label:['Spatial','Resilience'],type:'theme',x:500,y:610,r:82,
+ paragraphs:['What allows populations and communities to recover after disturbance? Identifying where resilient populations persist—and how they can replenish depleted areas—is central to effective marine management.','My research examines spatial resilience through connectivity in foundation species, particularly corals on tropical reefs and macroalgae in temperate ecosystems. It links ecological theory with decisions made under environmental uncertainty.'],
+ media:[{src:'assets/images/spatial-resilience.jpg',caption:'Spatial structure and recovery of marine habitats'}],
+ products:[{title:'Coral reef connectivity and dispersal modeling',detail:'Ongoing research',url:'https://www.griffinsrednick.com/publications'}]},
+{id:'sensing',label:['Advanced','Sensing'],type:'method',x:785,y:470,r:68,
+ paragraphs:['New observations make new ecological questions possible. I develop and integrate autonomous imaging, environmental sensors, and quantitative data streams to measure processes that conventional sampling can miss.','This includes time-resolved coral settlement imagery and linking biological observations with environmental and oceanographic measurements.'],
+ media:[{src:'assets/images/advanced-sensing.jpg',caption:'Autonomous underwater imaging system'},{src:'assets/gifs/coral-settlement.gif',caption:'Time series of coral settlement imagery'}],
+ products:[{title:'Autonomous coral settlement imaging',detail:'Instrumentation and observational methods',url:'https://www.griffinsrednick.com/about'}]},
+{id:'environment',label:['Environmental','Variability'],type:'mechanism',x:490,y:80,r:65,
+ paragraphs:['Environmental forcing varies across space and time. Temperature, hydrodynamics, and other drivers can synchronize or desynchronize populations, with consequences for stability and resilience.'],
+ media:[{src:'assets/images/environmental-variability.jpg',caption:'Environmental conditions in marine habitats'}],products:[]},
+{id:'interactions',label:['Species','Interactions'],type:'mechanism',x:930,y:305,r:59,
+ paragraphs:['Species interactions help determine how ecological communities change. I am interested in how food webs and other biological relationships contribute to population dynamics and stability across scales.'],
+ media:[{src:'assets/images/species-interactions.jpg',caption:'Species interactions in marine communities'}],products:[]},
+{id:'connectivity',label:['Larval','Connectivity'],type:'mechanism',x:255,y:545,r:66,
+ paragraphs:['Dispersal connects local populations into larger networks. I use ecological and oceanographic information to understand how connectivity influences persistence, recolonization, and the distribution of recovery potential.'],
+ media:[{src:'assets/images/larval-connectivity.jpg',caption:'Coral reef habitats connected by larval dispersal'},{src:'assets/gifs/dispersal.gif',caption:'Modeled dispersal pathways'}],
+ products:[{title:'Coral reef connectivity and dispersal modeling',detail:'Biophysical modeling research',url:'https://www.griffinsrednick.com/publications'}]},
+{id:'modeling',label:['Biophysical','Modeling'],type:'method',x:75,y:365,r:65,
+ paragraphs:['I combine ecological models with physical oceanography to investigate transport, connectivity, and population dynamics. Biophysical modeling helps translate observed processes into predictions across space and time.'],
+ media:[{src:'assets/images/biophysical-modeling.jpg',caption:'Ocean circulation and ecological modeling'}],products:[]},
+{id:'field',label:['Field','Ecology'],type:'method',x:75,y:665,r:58,
+ paragraphs:['Field experiments and observations ground my research in natural ecosystems. They help reveal ecological mechanisms, test predictions, and connect theoretical insights to marine environments.'],
+ media:[{src:'assets/images/field-ecology.jpg',caption:'Marine field research'}],products:[]}
 ];
-
-// EDIT CONNECTIONS HERE
-const connections = [
-  ["core", "async"],
-  ["core", "equilibrium"],
-  ["core", "resilience"],
-  ["core", "sensing"],
-  ["core", "modeling"],
-  ["async", "environment"],
-  ["async", "equilibrium"],
-  ["async", "resilience"],
-  ["equilibrium", "environment"],
-  ["equilibrium", "interactions"],
-  ["equilibrium", "resilience"],
-  ["resilience", "connectivity"],
-  ["resilience", "field"],
-  ["resilience", "sensing"],
-  ["connectivity", "modeling"],
-  ["connectivity", "field"],
-  ["modeling", "environment"],
-  ["modeling", "async"],
-  ["sensing", "field"],
-  ["sensing", "environment"],
-  ["field", "equilibrium"]
-];
-
-const colors = {
-  core: "#356e76",
-  theme: "#647f91",
-  mechanism: "#a17d50",
-  method: "#777d61"
-};
-
-const SVG_NS = "http://www.w3.org/2000/svg";
-const edgeLayer = document.getElementById("edges");
-const nodeLayer = document.getElementById("nodes");
-const topicMap = Object.fromEntries(topics.map(t => [t.id, t]));
-const edgeElements = [];
-const nodeElements = new Map();
-let selected = null;
-
-function svgElement(tag, attrs = {}) {
-  const el = document.createElementNS(SVG_NS, tag);
-  for (const [key, value] of Object.entries(attrs)) {
-    el.setAttribute(key, String(value));
-  }
-  return el;
-}
-
-// Draw lines FIRST so nodes always sit on top.
-connections.forEach(([a, b]) => {
-  const source = topicMap[a];
-  const target = topicMap[b];
-  if (!source || !target) return;
-
-  const line = svgElement("line", {
-    x1: source.x,
-    y1: source.y,
-    x2: target.x,
-    y2: target.y,
-    class: "edge"
-  });
-
-  line.dataset.a = a;
-  line.dataset.b = b;
-  edgeLayer.appendChild(line);
-  edgeElements.push(line);
-});
-
-// Draw fully opaque nodes.
-topics.forEach(topic => {
-  const group = svgElement("g", {
-    class: "node " + (topic.type === "core" ? "core" : ""),
-    tabindex: "0",
-    role: "button",
-    "aria-label": topic.label.join(" ")
-  });
-
-  group.dataset.id = topic.id;
-
-  const circle = svgElement("circle", {
-    cx: topic.x,
-    cy: topic.y,
-    r: topic.r,
-    fill: topic.type === "core" ? colors.core : "#f4f2ed",
-    stroke: colors[topic.type]
-  });
-
-  group.appendChild(circle);
-
-  const label = svgElement("text", {
-    "text-anchor": "middle"
-  });
-
-  const lineHeight = 18;
-  const startY = topic.y -
-    ((topic.label.length - 1) * lineHeight / 2) + 5;
-
-  topic.label.forEach((line, index) => {
-    const span = svgElement("tspan", {
-      x: topic.x,
-      y: startY + index * lineHeight
-    });
-    span.textContent = line;
-    label.appendChild(span);
-  });
-
-  group.appendChild(label);
-
-  group.addEventListener("click", () => selectTopic(topic.id));
-  group.addEventListener("keydown", event => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      selectTopic(topic.id);
-    }
-  });
-
-  nodeLayer.appendChild(group);
-  nodeElements.set(topic.id, group);
-});
-
-function selectTopic(id) {
-  selected = selected === id ? null : id;
-
-  const connected = new Set();
-  if (selected) connected.add(selected);
-
-  connections.forEach(([a, b]) => {
-    if (a === selected) connected.add(b);
-    if (b === selected) connected.add(a);
-  });
-
-  edgeElements.forEach(line => {
-    const active = line.dataset.a === selected ||
-                   line.dataset.b === selected;
-    line.style.opacity = !selected ? ".65" : active ? "1" : ".08";
-    line.style.strokeWidth = active ? "3" : "1.7";
-    line.style.stroke = active ? colors.core : "#b7bec0";
-  });
-
-  nodeElements.forEach((group, nodeId) => {
-    group.style.opacity =
-      !selected || connected.has(nodeId) ? "1" : ".22";
-
-    const circle = group.querySelector("circle");
-    circle.setAttribute(
-      "stroke-width",
-      nodeId === selected ? "4" : "2.2"
-    );
-  });
-
-  updatePanel(selected ? topicMap[selected] : null);
-}
-
-function updatePanel(topic) {
-  const title = document.getElementById("panel-title");
-  const description = document.getElementById("panel-description");
-  const links = document.getElementById("panel-links");
-
-  links.replaceChildren();
-
-  if (!topic) {
-    title.textContent = "Research Network";
-    description.textContent =
-      "Select a research theme, ecological mechanism, or methodological approach to explore how the different components of my research connect.";
-    return;
-  }
-
-  title.textContent = topic.label.join(" ");
-  description.textContent = topic.description;
-
-  if (topic.links && topic.links.length) {
-    topic.links.forEach(item => {
-      const link = document.createElement("a");
-      link.href = item.url;
-      link.textContent = item.title;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      links.appendChild(link);
-    });
-  }
-}
+const connections=[['core','async'],['core','equilibrium'],['core','resilience'],['core','sensing'],['core','modeling'],['async','environment'],['async','equilibrium'],['async','resilience'],['equilibrium','environment'],['equilibrium','interactions'],['equilibrium','resilience'],['resilience','connectivity'],['resilience','field'],['resilience','sensing'],['connectivity','modeling'],['connectivity','field'],['modeling','environment'],['modeling','async'],['sensing','field'],['sensing','environment'],['field','equilibrium']];
+const colors={core:'#356e76',theme:'#647f91',mechanism:'#a17d50',method:'#777d61'};
+const ns='http://www.w3.org/2000/svg',byId=Object.fromEntries(topics.map(t=>[t.id,t]));
+const edgeLayer=document.getElementById('edges'),nodeLayer=document.getElementById('nodes');
+const edgeEls=[],nodeEls=new Map();let selected=null;
+function el(tag,attrs={}){const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,String(v));return e}
+connections.forEach(([a,b])=>{const A=byId[a],B=byId[b];if(!A||!B)return;const line=el('line',{x1:A.x,y1:A.y,x2:B.x,y2:B.y,class:'edge'});line.dataset.a=a;line.dataset.b=b;edgeLayer.append(line);edgeEls.push(line)});
+topics.forEach(t=>{const g=el('g',{class:'node'+(t.type==='core'?' core':''),tabindex:0,role:'button','aria-label':t.label.join(' ')});const c=el('circle',{cx:t.x,cy:t.y,r:t.r,fill:t.type==='core'?colors.core:'#f4f2ed',stroke:colors[t.type]});g.append(c);const text=el('text');t.label.forEach((s,i)=>{const span=el('tspan',{x:t.x,y:t.y-((t.label.length-1)*18/2)+5+i*18});span.textContent=s;text.append(span)});g.append(text);g.addEventListener('click',()=>select(t.id));g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select(t.id)}});nodeLayer.append(g);nodeEls.set(t.id,g)});
+function select(id){selected=selected===id?null:id;const related=new Set([selected]);connections.forEach(([a,b])=>{if(a===selected)related.add(b);if(b===selected)related.add(a)});edgeEls.forEach(l=>{const active=l.dataset.a===selected||l.dataset.b===selected;l.style.opacity=!selected?'.7':active?'1':'.08';l.style.strokeWidth=active?'3':'1.8';l.style.stroke=active?colors.core:'#b7bec0'});nodeEls.forEach((g,id)=>{g.style.opacity=!selected||related.has(id)?'1':'.22';g.querySelector('circle').setAttribute('stroke-width',id===selected?'4':'2.3')});render(selected?byId[selected]:null)}
+function render(t){const title=document.getElementById('detail-title'),txt=document.getElementById('detail-text'),media=document.getElementById('detail-media'),products=document.getElementById('detail-products');txt.replaceChildren();media.replaceChildren();products.replaceChildren();if(!t){title.textContent='Explore my research';const p=document.createElement('p');p.textContent='Select a node to learn more about how the themes, mechanisms, and methods of my research connect.';txt.append(p);return}title.textContent=t.label.join(' ');(t.paragraphs||[]).forEach(s=>{const p=document.createElement('p');p.textContent=s;txt.append(p)});(t.media||[]).forEach(item=>{const figure=document.createElement('figure'),img=document.createElement('img'),cap=document.createElement('figcaption');img.src=item.src;img.alt=item.caption||t.label.join(' ');img.loading='lazy';img.onerror=()=>figure.remove();cap.textContent=item.caption||'';figure.append(img,cap);media.append(figure)});if(t.products?.length){const heading=document.createElement('h3');heading.textContent='Selected research products';products.append(heading);t.products.forEach(p=>{const article=document.createElement('article');const link=document.createElement('a');link.href=p.url;link.target='_blank';link.rel='noopener noreferrer';link.textContent=p.title;article.append(link);if(p.detail){const sub=document.createElement('div');sub.textContent=p.detail;article.append(sub)}products.append(article)})}}
 </script>
 </body>
 </html>
