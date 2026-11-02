@@ -1,52 +1,433 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="An interactive map of ecological research themes, mechanisms, and methods.">
 <title>Research Network | Griffin Srednick</title>
 <style>
-:root{--ink:#243a42;--muted:#64767b;--paper:#f8faf9;--line:#dbe4e3;--teal:#397e83;--gold:#ad8550;--blue:#6f7f9e}
-*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55}
-main{max-width:1120px;margin:auto;padding:clamp(22px,5vw,64px)}.eyebrow{font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);font-weight:700}h1{font-family:Georgia,serif;font-size:clamp(2rem,4vw,3.5rem);font-weight:400;line-height:1.15;margin:.5rem 0 1rem}header p{max-width:740px;color:var(--muted);font-size:1.05rem}
-.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(270px,1fr);gap:22px;margin-top:30px}.network,.detail{background:white;border:1px solid var(--line);border-radius:12px}.network{padding:12px;min-width:0}svg{width:100%;height:auto;display:block;overflow:visible}.edge{stroke:#a9babb;stroke-width:1.6;transition:opacity .2s,stroke-width .2s}.node{cursor:pointer;outline:none}.node circle{transition:opacity .2s,stroke-width .2s}.node text{font-size:13px;font-weight:600;pointer-events:none;fill:var(--ink);text-anchor:middle}.node.core text{fill:#fff}.node:focus-visible circle{stroke:#111;stroke-width:4}.detail{padding:clamp(20px,3vw,32px);align-self:stretch}.detail .tag{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);font-weight:700}.detail h2{font-family:Georgia,serif;font-size:1.8rem;font-weight:400;line-height:1.2;margin:.6rem 0 1rem}.detail p{color:#4e6168}.detail ul{padding-left:1.2rem}.detail li{margin:.5rem 0}.detail a{color:#276e79;text-underline-offset:3px}.legend{display:flex;flex-wrap:wrap;gap:16px;padding:6px 8px 10px;color:var(--muted);font-size:.8rem}.legend span{display:inline-flex;align-items:center;gap:6px}.dot{height:10px;width:10px;border-radius:50%;display:inline-block}.hint{font-size:.83rem;color:var(--muted);padding:0 8px 6px}.reset{background:transparent;border:1px solid var(--line);border-radius:6px;padding:8px 12px;color:var(--ink);cursor:pointer;font:inherit}.reset:hover{background:#f0f5f4}.footer{font-size:.83rem;color:var(--muted);margin-top:22px}
-@media(max-width:760px){.layout{grid-template-columns:1fr}.network{padding:4px}.node text{font-size:12px}.detail{min-height:240px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important}}
+:root {
+  --ink: #242424;
+  --muted: #666;
+  --line: #b7bec0;
+  --teal: #356e76;
+  --blue: #647f91;
+  --olive: #777d61;
+  --gold: #a17d50;
+  --node: #f4f2ed;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+  color: var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+}
+body { overflow-x: hidden; }
+.wrapper {
+  width: 100%;
+  max-width: 1100px;
+  margin: auto;
+  padding: 10px 12px 24px;
+}
+.intro {
+  text-align: center;
+  margin: 8px auto 0;
+}
+.intro p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.edge {
+  stroke: var(--line);
+  stroke-width: 1.7;
+  opacity: .65;
+  transition: opacity .2s, stroke-width .2s;
+}
+.node {
+  cursor: pointer;
+  outline: none;
+  transition: opacity .2s;
+}
+.node circle {
+  stroke-width: 2.2;
+  transition: stroke-width .2s;
+}
+.node text {
+  font-family: Arial, Helvetica, sans-serif;
+  text-anchor: middle;
+  font-size: 14px;
+  font-weight: 600;
+  fill: var(--ink);
+  pointer-events: none;
+}
+.node.core text { fill: white; }
+.node:focus-visible circle { stroke-width: 5; }
+.node:hover circle { stroke-width: 4; }
+.panel {
+  max-width: 760px;
+  margin: -4px auto 0;
+  padding: 18px 4px;
+  border-top: 1px solid #c8c8c8;
+  min-height: 140px;
+}
+.panel h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+.panel p {
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0 0 12px;
+  color: #444;
+}
+.panel a {
+  display: block;
+  font-size: 14px;
+  color: var(--teal);
+  margin: 8px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  margin: 4px 0 18px;
+}
+@media(max-width:600px) {
+  .wrapper { padding: 8px 4px 20px; }
+  .node text { font-size: 15px; }
+  .panel { margin: 0 12px; }
+}
 </style>
 </head>
 <body>
-<main>
-<header><div class="eyebrow">Research overview</div><h1>Ecological connections across space and time</h1><p>My research explores how environmental variability, biological interactions, and connectivity combine to shape the dynamics and resilience of marine ecosystems. Select a topic to explore its relationships with other parts of my research.</p></header>
-<section class="layout" aria-label="Interactive research map">
-<div class="network"><svg id="graph" viewBox="0 0 650 600" role="group" aria-label="Clickable network of research themes, ecological mechanisms, and methods"><g id="edges"></g><g id="nodes"></g></svg><div class="legend"><span><i class="dot" style="background:#397e83"></i>Research themes</span><span><i class="dot" style="background:#ad8550"></i>Mechanisms</span><span><i class="dot" style="background:#6f7f9e"></i>Methods</span></div><div class="hint">Select a circle to highlight connected topics. Select it again to reset.</div></div>
-<article class="detail" aria-live="polite"><div class="tag" id="category">Research network</div><h2 id="detail-title">Explore the connections</h2><p id="detail-description">Select a node in the network to learn about the research question or approach it represents.</p><div id="detail-links"></div><button class="reset" id="reset" type="button">Show all connections</button></article>
-</section><p class="footer">This network is a conceptual map, not a quantitative analysis. Connections represent shared research questions, mechanisms, or approaches.</p>
+<main class="wrapper">
+  <div class="intro">
+    <p>Exploring the processes that shape ecological dynamics, stability, and resilience across space and time.</p>
+  </div>
+
+  <svg id="network" viewBox="0 0 1000 740"
+       role="group" aria-label="Interactive research network">
+    <g id="edges"></g>
+    <g id="nodes"></g>
+  </svg>
+
+  <div class="hint">Select a node to explore research connections and associated work.</div>
+
+  <section class="panel" aria-live="polite">
+    <h2 id="panel-title">Research Network</h2>
+    <p id="panel-description">
+      Select a research theme, ecological mechanism, or methodological approach to explore how the different components of my research connect.
+    </p>
+    <div id="panel-links"></div>
+  </section>
 </main>
+
 <script>
-// EDIT THIS SECTION to update research descriptions, positions, and publication links.
-// Replace example.org links with actual project or publication URLs; or leave links empty.
-const topics=[
-{id:'core',label:['Predictive','ecology'],category:'core',x:325,y:292,r:70,description:'Understanding how ecological processes interact across space and time to determine the dynamics, stability, and resilience of marine ecosystems.',links:[]},
-{id:'async',label:['Asynchrony','& stability'],category:'theme',x:160,y:133,r:66,description:'Investigating how spatial and temporal differences in population dynamics and environmental conditions influence stability at larger scales.',links:[]},
-{id:'equilibrium',label:['Ecosystem','equilibrium'],category:'theme',x:490,y:132,r:65,description:'Exploring how demographic processes, species interactions, and environmental conditions influence ecological equilibria.',links:[]},
-{id:'resilience',label:['Spatial','resilience'],category:'theme',x:326,y:489,r:69,description:'Understanding how spatial structure, dispersal, and connectivity influence persistence and recovery in marine ecosystems.',links:[]},
-{id:'environment',label:['Environmental','variability'],category:'mechanism',x:324,y:61,r:47,description:'Environmental fluctuations can alter local population dynamics and their synchrony across sites.',links:[]},
-{id:'interactions',label:['Species','interactions'],category:'mechanism',x:588,y:291,r:49,description:'Biological interactions influence population and community dynamics and can mediate responses to environmental change.',links:[]},
-{id:'connectivity',label:['Larval','connectivity'],category:'mechanism',x:522,y:456,r:49,description:'Larval dispersal links local populations and can influence recruitment, recovery, and regional dynamics.',links:[]},
-{id:'models',label:['Biophysical','modeling'],category:'method',x:119,y:359,r:49,description:'Integrating ocean circulation, dispersal, and ecological models to investigate spatial dynamics.',links:[]},
-{id:'field',label:['Field','ecology'],category:'method',x:133,y:516,r:47,description:'Using field observations, experiments, and emerging technologies to test ecological ideas in natural marine systems.',links:[]}
+"use strict";
+
+// EDIT RESEARCH TOPICS HERE
+const topics = [
+  {
+    id: "core",
+    label: ["Predictive", "Ecology"],
+    type: "core",
+    x: 500, y: 355, r: 88,
+    description: "Understanding how biological interactions, environmental variability, and spatial processes shape ecological dynamics, stability, and resilience.",
+    links: []
+  },
+  {
+    id: "async",
+    label: ["Asynchrony", "& Stability"],
+    type: "theme",
+    x: 240, y: 175, r: 78,
+    description: "Investigating how differences in population and environmental fluctuations across space and time stabilize ecological systems.",
+    links: [
+      {
+        title: "Spatial portfolios in coral metapopulations",
+        url: "https://www.griffinsrednick.com/publications"
+      }
+    ]
+  },
+  {
+    id: "equilibrium",
+    label: ["Ecosystem", "Equilibrium"],
+    type: "theme",
+    x: 765, y: 175, r: 78,
+    description: "Understanding how ecological interactions, demographic processes, and environmental conditions shape ecosystem equilibrium.",
+    links: [
+      {
+        title: "Research on ecological equilibrium and community dynamics",
+        url: "https://www.griffinsrednick.com/publications"
+      }
+    ]
+  },
+  {
+    id: "resilience",
+    label: ["Spatial", "Resilience"],
+    type: "theme",
+    x: 500, y: 610, r: 82,
+    description: "Exploring how connectivity, dispersal, and spatial population structure influence recovery and persistence in changing marine ecosystems.",
+    links: [
+      {
+        title: "Coral reef connectivity and dispersal research",
+        url: "https://www.griffinsrednick.com/publications"
+      }
+    ]
+  },
+  {
+    id: "sensing",
+    label: ["Advanced", "Sensing"],
+    type: "method",
+    x: 785, y: 470, r: 68,
+    description: "Developing and integrating autonomous imaging, environmental sensors, and emerging observational technologies to capture ecological processes at new spatial and temporal resolutions.",
+    links: [
+      {
+        title: "Autonomous coral settlement imaging and observational technology",
+        url: "https://www.griffinsrednick.com/about"
+      }
+    ]
+  },
+  {
+    id: "environment",
+    label: ["Environmental", "Variability"],
+    type: "mechanism",
+    x: 490, y: 80, r: 65,
+    description: "Examining how variation in temperature, hydrodynamics, and other environmental drivers influences ecological dynamics and population synchrony.",
+    links: []
+  },
+  {
+    id: "interactions",
+    label: ["Species", "Interactions"],
+    type: "mechanism",
+    x: 930, y: 305, r: 59,
+    description: "Investigating how interactions among organisms influence community structure, ecological dynamics, and ecosystem stability.",
+    links: []
+  },
+  {
+    id: "connectivity",
+    label: ["Larval", "Connectivity"],
+    type: "mechanism",
+    x: 255, y: 545, r: 66,
+    description: "Quantifying dispersal pathways and demographic connectivity among marine populations, including coral reef metapopulations.",
+    links: [
+      {
+        title: "Coral connectivity and biophysical modeling",
+        url: "https://www.griffinsrednick.com/publications"
+      }
+    ]
+  },
+  {
+    id: "modeling",
+    label: ["Biophysical", "Modeling"],
+    type: "method",
+    x: 75, y: 365, r: 65,
+    description: "Combining physical oceanography, numerical simulations, and ecological models to understand and predict marine population dynamics.",
+    links: []
+  },
+  {
+    id: "field",
+    label: ["Field", "Ecology"],
+    type: "method",
+    x: 75, y: 665, r: 58,
+    description: "Using field experiments, ecological surveys, and in situ observations to test ecological mechanisms in natural marine systems.",
+    links: []
+  }
 ];
-// Add or remove edges here. Each pair is a connection between topic IDs.
-const connections=[['core','async'],['core','equilibrium'],['core','resilience'],['async','environment'],['async','equilibrium'],['async','resilience'],['equilibrium','interactions'],['equilibrium','resilience'],['resilience','connectivity'],['connectivity','models'],['models','core'],['models','environment'],['field','resilience'],['field','async'],['field','equilibrium']];
-const palette={core:'#245b68',theme:'#397e83',mechanism:'#ad8550',method:'#6f7f9e'};
-const svgNS='http://www.w3.org/2000/svg',byId=Object.fromEntries(topics.map(t=>[t.id,t]));
-const edgeLayer=document.getElementById('edges'),nodeLayer=document.getElementById('nodes');
-let selected=null;
-function element(tag,attrs,parent){const el=document.createElementNS(svgNS,tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);parent.appendChild(el);return el}
-for(const [a,b] of connections){const A=byId[a],B=byId[b];const line=element('line',{x1:A.x,y1:A.y,x2:B.x,y2:B.y,class:'edge','data-a':a,'data-b':b},edgeLayer);line.style.opacity='.52'}
-for(const t of topics){const g=element('g',{class:'node '+t.category,tabindex:'0',role:'button','aria-label':t.label.join(' '),'aria-pressed':'false','data-id':t.id},nodeLayer);element('circle',{cx:t.x,cy:t.y,r:t.r,fill:palette[t.category],'fill-opacity':t.category==='core'?'1':'.15',stroke:palette[t.category],'stroke-width':'2.2'},g);const text=element('text',{},g);t.label.forEach((line,i)=>{const span=element('tspan',{x:t.x,y:t.y+(i-(t.label.length-1)/2)*17+5},text);span.textContent=line});g.addEventListener('click',()=>select(t.id));g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select(t.id)}})}
-function select(id){selected=selected===id?null:id;const connected=new Set([selected]);for(const [a,b] of connections){if(a===selected)connected.add(b);if(b===selected)connected.add(a)}for(const line of edgeLayer.children){const active=line.dataset.a===selected||line.dataset.b===selected;line.style.opacity=!selected?'.52':active?'1':'.06';line.style.strokeWidth=active?'3':'1.6'}for(const g of nodeLayer.children){const active=g.dataset.id===selected;g.style.opacity=!selected||connected.has(g.dataset.id)?'1':'.2';g.querySelector('circle').setAttribute('stroke-width',active?'4':'2.2');g.setAttribute('aria-pressed',String(active))}const t=byId[selected];document.getElementById('category').textContent=t?(t.category==='core'?'Overarching question':t.category==='theme'?'Research theme':t.category==='method'?'Research approach':'Ecological mechanism'):'Research network';document.getElementById('detail-title').textContent=t?t.label.join(' '):'Explore the connections';document.getElementById('detail-description').textContent=t?t.description:'Select a node in the network to learn about the research question or approach it represents.';const links=document.getElementById('detail-links');links.replaceChildren();if(t&&t.links.length){const heading=document.createElement('h3');heading.textContent='Selected research';links.appendChild(heading);const list=document.createElement('ul');for(const item of t.links){const li=document.createElement('li'),a=document.createElement('a');a.textContent=item.title;a.href=item.url;a.target='_blank';a.rel='noopener noreferrer';li.appendChild(a);list.appendChild(li)}links.appendChild(list)}}
-document.getElementById('reset').addEventListener('click',()=>{if(selected)select(selected)});
+
+// EDIT CONNECTIONS HERE
+const connections = [
+  ["core", "async"],
+  ["core", "equilibrium"],
+  ["core", "resilience"],
+  ["core", "sensing"],
+  ["core", "modeling"],
+  ["async", "environment"],
+  ["async", "equilibrium"],
+  ["async", "resilience"],
+  ["equilibrium", "environment"],
+  ["equilibrium", "interactions"],
+  ["equilibrium", "resilience"],
+  ["resilience", "connectivity"],
+  ["resilience", "field"],
+  ["resilience", "sensing"],
+  ["connectivity", "modeling"],
+  ["connectivity", "field"],
+  ["modeling", "environment"],
+  ["modeling", "async"],
+  ["sensing", "field"],
+  ["sensing", "environment"],
+  ["field", "equilibrium"]
+];
+
+const colors = {
+  core: "#356e76",
+  theme: "#647f91",
+  mechanism: "#a17d50",
+  method: "#777d61"
+};
+
+const SVG_NS = "http://www.w3.org/2000/svg";
+const edgeLayer = document.getElementById("edges");
+const nodeLayer = document.getElementById("nodes");
+const topicMap = Object.fromEntries(topics.map(t => [t.id, t]));
+const edgeElements = [];
+const nodeElements = new Map();
+let selected = null;
+
+function svgElement(tag, attrs = {}) {
+  const el = document.createElementNS(SVG_NS, tag);
+  for (const [key, value] of Object.entries(attrs)) {
+    el.setAttribute(key, String(value));
+  }
+  return el;
+}
+
+// Draw lines FIRST so nodes always sit on top.
+connections.forEach(([a, b]) => {
+  const source = topicMap[a];
+  const target = topicMap[b];
+  if (!source || !target) return;
+
+  const line = svgElement("line", {
+    x1: source.x,
+    y1: source.y,
+    x2: target.x,
+    y2: target.y,
+    class: "edge"
+  });
+
+  line.dataset.a = a;
+  line.dataset.b = b;
+  edgeLayer.appendChild(line);
+  edgeElements.push(line);
+});
+
+// Draw fully opaque nodes.
+topics.forEach(topic => {
+  const group = svgElement("g", {
+    class: "node " + (topic.type === "core" ? "core" : ""),
+    tabindex: "0",
+    role: "button",
+    "aria-label": topic.label.join(" ")
+  });
+
+  group.dataset.id = topic.id;
+
+  const circle = svgElement("circle", {
+    cx: topic.x,
+    cy: topic.y,
+    r: topic.r,
+    fill: topic.type === "core" ? colors.core : "#f4f2ed",
+    stroke: colors[topic.type]
+  });
+
+  group.appendChild(circle);
+
+  const label = svgElement("text", {
+    "text-anchor": "middle"
+  });
+
+  const lineHeight = 18;
+  const startY = topic.y -
+    ((topic.label.length - 1) * lineHeight / 2) + 5;
+
+  topic.label.forEach((line, index) => {
+    const span = svgElement("tspan", {
+      x: topic.x,
+      y: startY + index * lineHeight
+    });
+    span.textContent = line;
+    label.appendChild(span);
+  });
+
+  group.appendChild(label);
+
+  group.addEventListener("click", () => selectTopic(topic.id));
+  group.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      selectTopic(topic.id);
+    }
+  });
+
+  nodeLayer.appendChild(group);
+  nodeElements.set(topic.id, group);
+});
+
+function selectTopic(id) {
+  selected = selected === id ? null : id;
+
+  const connected = new Set();
+  if (selected) connected.add(selected);
+
+  connections.forEach(([a, b]) => {
+    if (a === selected) connected.add(b);
+    if (b === selected) connected.add(a);
+  });
+
+  edgeElements.forEach(line => {
+    const active = line.dataset.a === selected ||
+                   line.dataset.b === selected;
+    line.style.opacity = !selected ? ".65" : active ? "1" : ".08";
+    line.style.strokeWidth = active ? "3" : "1.7";
+    line.style.stroke = active ? colors.core : "#b7bec0";
+  });
+
+  nodeElements.forEach((group, nodeId) => {
+    group.style.opacity =
+      !selected || connected.has(nodeId) ? "1" : ".22";
+
+    const circle = group.querySelector("circle");
+    circle.setAttribute(
+      "stroke-width",
+      nodeId === selected ? "4" : "2.2"
+    );
+  });
+
+  updatePanel(selected ? topicMap[selected] : null);
+}
+
+function updatePanel(topic) {
+  const title = document.getElementById("panel-title");
+  const description = document.getElementById("panel-description");
+  const links = document.getElementById("panel-links");
+
+  links.replaceChildren();
+
+  if (!topic) {
+    title.textContent = "Research Network";
+    description.textContent =
+      "Select a research theme, ecological mechanism, or methodological approach to explore how the different components of my research connect.";
+    return;
+  }
+
+  title.textContent = topic.label.join(" ");
+  description.textContent = topic.description;
+
+  if (topic.links && topic.links.length) {
+    topic.links.forEach(item => {
+      const link = document.createElement("a");
+      link.href = item.url;
+      link.textContent = item.title;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      links.appendChild(link);
+    });
+  }
+}
 </script>
 </body>
 </html>
