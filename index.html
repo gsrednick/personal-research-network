@@ -12,7 +12,7 @@ html,body{margin:0;background:transparent!important;color:var(--ink);font-family
 body{overflow-x:hidden}
 .wrap{max-width:1100px;margin:auto;padding:12px 14px 30px}
 .intro{text-align:center;color:var(--ink);font-size:24px;font-weight:500;line-height:1.4;max-width:850px;margin:8px auto 0}
-svg{width:100%;height:auto;display:block}
+svg{display:block;width:100%;height:auto;min-height:250px;overflow:visible}
 .edge{stroke:var(--line);stroke-width:1.8;opacity:.7;transition:opacity .2s,stroke-width .2s}
 .node{cursor:pointer;transition:opacity .2s}
 .node circle{stroke-width:2.3;transition:stroke-width .2s}
@@ -34,6 +34,7 @@ svg{width:100%;height:auto;display:block}
 .products a{color:var(--teal);text-decoration:underline;text-underline-offset:3px}
 @media(max-width:600px){
 .wrap{padding:8px 6px 20px}
+.intro{font-size:clamp(18px,4vw,24px)}
 .detail{margin:0 10px}
 .media{grid-template-columns:1fr}
 .detail h2{font-size:20px}
@@ -43,7 +44,14 @@ svg{width:100%;height:auto;display:block}
 <body>
 <main class="wrap">
 <p class="intro">Understanding how ecological interactions, environmental variability, and spatial processes shape marine ecosystem resilience.</p>
-<svg viewBox="0 0 1000 740" role="group" aria-label="Interactive research network">
+<svg id="network"
+     xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1000 740"
+     width="1000"
+     height="740"
+     preserveAspectRatio="xMidYMid meet"
+     role="img"
+     aria-label="Interactive research network">
 <g id="edges"></g>
 <g id="nodes"></g>
 </svg>
@@ -112,7 +120,7 @@ paragraphs:[
 ],
 media:[
 {src:'assets/gifs/dispersal.gif',caption:'Modeled dispersal and connectivity'},
-{src:'assets/images/env_variability.jpeg',caption:'Environmental variability'},
+{src:'assets/images/env_variability.jpeg',caption:'Environmental variability'}
 ],
 products:[
 {title:'Srednick, Davis & Edmunds (2023). Asynchrony in coral community structure. Scientific Reports.',url:'https://doi.org/10.1038/s41598-023-28482-7'},
@@ -126,7 +134,7 @@ paragraphs:[
 'This includes time-resolved benthic imagery and linking biological observations with environmental and oceanographic processes.'
 ],
 media:[
-{src:'assets/images/advanced_sensing.jpeg',caption:'SCoRE FOCE on Moorea's North Shore'},
+{src:'assets/images/advanced_sensing.jpeg',caption:"SCoRE FOCE on Moorea's North Shore"},
 {src:'assets/images/coral_settlement.jpeg',caption:'Autonomous benthic data collection platform'}
 ],
 products:[]
@@ -151,7 +159,7 @@ paragraphs:[
 'Species interactions help determine how ecological communities change. I am interested in how food webs and other biological relationships contribute to population dynamics and stability across scales.'
 ],
 media:[
-{src:'assets/images/species_interactions.jpeg',caption:'Trophic network of predator (Sebastes pinneger) and prey taxa, with prey exhibiting direct and or apparent competition.'},
+{src:'assets/images/species_interactions.jpeg',caption:'Trophic network of predator (Sebastes pinneger) and prey taxa, with prey exhibiting direct and/or apparent competition.'},
 {src:'assets/images/species_interactions_2.jpeg',caption:'The result of species interactions and environmental variability on community stability.'}
 ],
 products:[
@@ -176,7 +184,7 @@ paragraphs:[
 'I combine ecological models with physical oceanography to investigate transport, connectivity, and population dynamics. Biophysical modeling helps translate observed processes into predictions across space and time.'
 ],
 media:[
-{src:'assets/gifs/dispersal.gif',caption:'Pocillopora spp. dispersal model on Moorea's North Shore'},
+{src:'assets/gifs/dispersal.gif',caption:"Pocillopora spp. dispersal model on Moorea's North Shore"},
 {src:'assets/images/env_variability_2.jpeg',caption:'Spatiotemporal heterogeneity in coral community dynamics in Moorea'}
 ],
 products:[
