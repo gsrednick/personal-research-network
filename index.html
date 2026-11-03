@@ -12,7 +12,7 @@ html,body{margin:0;background:transparent!important;color:var(--ink);font-family
 body{overflow-x:hidden}
 .wrap{max-width:1100px;margin:auto;padding:12px 14px 30px}
 .intro{text-align:center;color:var(--ink);font-size:24px;font-weight:500;line-height:1.4;max-width:850px;margin:8px auto 0}
-svg{display:block;width:100%;height:auto;min-height:250px;overflow:visible}
+#network{display:block;width:100%;height:auto;aspect-ratio:1000/740;overflow:visible}
 .edge{stroke:var(--line);stroke-width:1.8;opacity:.7;transition:opacity .2s,stroke-width .2s}
 .node{cursor:pointer;transition:opacity .2s}
 .node circle{stroke-width:2.3;transition:stroke-width .2s}
@@ -45,13 +45,13 @@ svg{display:block;width:100%;height:auto;min-height:250px;overflow:visible}
 <main class="wrap">
 <p class="intro">Understanding how ecological interactions, environmental variability, and spatial processes shape marine ecosystem resilience.</p>
 <svg id="network"
-     xmlns="http://www.w3.org/2000/svg"
-     viewBox="0 0 1000 740"
-     width="1000"
-     height="740"
-     preserveAspectRatio="xMidYMid meet"
-     role="img"
-     aria-label="Interactive research network">
+xmlns="http://www.w3.org/2000/svg"
+viewBox="0 0 1000 740"
+width="1000"
+height="740"
+preserveAspectRatio="xMidYMid meet"
+role="img"
+aria-label="Interactive research network">
 <g id="edges"></g>
 <g id="nodes"></g>
 </svg>
@@ -66,7 +66,6 @@ svg{display:block;width:100%;height:auto;min-height:250px;overflow:visible}
 <script>
 'use strict';
 
-// Media files are in assets/images/ and assets/gifs/
 const topics=[
 {
 id:'core',label:['Predictive','Ecology'],type:'core',x:500,y:355,r:88,
@@ -184,7 +183,7 @@ paragraphs:[
 'I combine ecological models with physical oceanography to investigate transport, connectivity, and population dynamics. Biophysical modeling helps translate observed processes into predictions across space and time.'
 ],
 media:[
-{src:'assets/gifs/dispersal.gif',caption:'Pocillopora spp. dispersal model on Moorea's North Shore'},
+{src:'assets/gifs/dispersal.gif',caption:"Pocillopora spp. dispersal model on Moorea's North Shore"},
 {src:'assets/images/env_variability_2.jpeg',caption:'Spatiotemporal heterogeneity in coral community dynamics in Moorea'}
 ],
 products:[
@@ -239,7 +238,10 @@ method:'#777d61'
 };
 
 const ns='http://www.w3.org/2000/svg';
-const byId=Object.fromEntries(topics.map(t=>[t.id,t]));
+const byId={};
+topics.forEach(t=>{byId[t.id]=t;});
+
+const svg=document.getElementById('network');
 const edgeLayer=document.getElementById('edges');
 const nodeLayer=document.getElementById('nodes');
 const edgeEls=[];
@@ -248,11 +250,11 @@ let selected=null;
 
 function el(tag,attrs={}){
 const e=document.createElementNS(ns,tag);
-for(const [k,v] of Object.entries(attrs))e.setAttribute(k,String(v));
+Object.keys(attrs).forEach(k=>e.setAttribute(k,String(attrs[k])));
 return e;
 }
 
-// Draw connecting lines behind the nodes.
+// Draw connecting lines behind nodes.
 connections.forEach(([a,b])=>{
 const A=byId[a],B=byId[b];
 if(!A||!B)return;
@@ -261,7 +263,7 @@ x1:A.x,y1:A.y,x2:B.x,y2:B.y,class:'edge'
 });
 line.dataset.a=a;
 line.dataset.b=b;
-edgeLayer.append(line);
+edgeLayer.appendChild(line);
 edgeEls.push(line);
 });
 
@@ -278,7 +280,7 @@ cx:t.x,cy:t.y,r:t.r,
 fill:t.type==='core'?colors.core:'#f4f2ed',
 stroke:colors[t.type]
 });
-g.append(c);
+g.appendChild(c);
 
 const text=el('text');
 t.label.forEach((s,i)=>{
@@ -287,9 +289,9 @@ x:t.x,
 y:t.y-((t.label.length-1)*18/2)+5+i*18
 });
 span.textContent=s;
-text.append(span);
+text.appendChild(span);
 });
-g.append(text);
+g.appendChild(text);
 
 g.addEventListener('click',()=>select(t.id));
 g.addEventListener('keydown',e=>{
@@ -298,7 +300,7 @@ e.preventDefault();
 select(t.id);
 }
 });
-nodeLayer.append(g);
+nodeLayer.appendChild(g);
 nodeEls.set(t.id,g);
 });
 
@@ -341,7 +343,7 @@ if(!t){
 title.textContent='Explore my research';
 const p=document.createElement('p');
 p.textContent='Select a node to learn more about how the themes, mechanisms, and methods of my research connect.';
-txt.append(p);
+txt.appendChild(p);
 return;
 }
 
@@ -350,7 +352,7 @@ title.textContent=t.label.join(' ');
 (t.paragraphs||[]).forEach(s=>{
 const p=document.createElement('p');
 p.textContent=s;
-txt.append(p);
+txt.appendChild(p);
 });
 
 (t.media||[]).forEach(item=>{
@@ -362,14 +364,15 @@ img.alt=item.caption||t.label.join(' ');
 img.loading='lazy';
 img.onerror=()=>figure.remove();
 cap.textContent=item.caption||'';
-figure.append(img,cap);
-media.append(figure);
+figure.appendChild(img);
+figure.appendChild(cap);
+media.appendChild(figure);
 });
 
-if(t.products?.length){
+if(t.products&&t.products.length){
 const heading=document.createElement('h3');
 heading.textContent='Selected publications';
-products.append(heading);
+products.appendChild(heading);
 
 t.products.forEach(p=>{
 const article=document.createElement('article');
@@ -378,14 +381,14 @@ link.href=p.url;
 link.target='_blank';
 link.rel='noopener noreferrer';
 link.textContent=p.title;
-article.append(link);
+article.appendChild(link);
 
 if(p.detail){
 const sub=document.createElement('div');
 sub.textContent=p.detail;
-article.append(sub);
+article.appendChild(sub);
 }
-products.append(article);
+products.appendChild(article);
 });
 }
 }
